@@ -2,4 +2,4 @@ package.path = package.path .. ";" .. string.match(({reaper.get_action_context()
 local pj = require "PresetinJuilauttaja"
 local tracks = require "Tracks"
 
-pj.useTracks(tracks.strings)
+pj.createSplit(tracks.NUC_Brass, tracks.NUC_Strings,61)

@@ -6,7 +6,7 @@ local tracks = require "Tracks"
 local MUTED   = true
 local UNMUTED = false
 
-local SPLIT_NOTE = 60
+local SPLIT_NOTE = 61
 
 local COLOR      = {}
 COLOR.RED        = {255, 0, 0}
@@ -71,26 +71,26 @@ local function unmuteTrack(trackName)
     setTrackMuteState(trackName, UNMUTED)
 end
 
-local function makeTrackLowerSplit(trackName)
+local function makeTrackLowerSplit(trackName, splitNote)
     local track = getTrackByName(trackName)
     if track then 
         reaper.TrackFX_SetEnabled(track, 0, MUTED)
         
-        -- Set MIDI Note Filter to pass notes from 0 to SPLIT_NOTE
+        -- Set MIDI Note Filter to pass notes from 0 to splitNote
         reaper.TrackFX_SetParam(track, 0, 0, 0)
-        reaper.TrackFX_SetParam(track, 0, 1, SPLIT_NOTE)
+        reaper.TrackFX_SetParam(track, 0, 1, splitNote)
         
         setTrackColor(track, COLOR.BLUE)
     end
 end
 
-local function makeTrackUpperSplit(trackName)
+local function makeTrackUpperSplit(trackName, splitNote)
     local track = getTrackByName(trackName)
     if track then 
         reaper.TrackFX_SetEnabled(track, 0, MUTED)
         
-        -- Set MIDI Note Filter to pass notes from SPLIT_NOTE to 127
-        reaper.TrackFX_SetParam(track, 0, 0, SPLIT_NOTE + 1)
+        -- Set MIDI Note Filter to pass notes from splitNote to 127
+        reaper.TrackFX_SetParam(track, 0, 0, splitNote + 1)
         reaper.TrackFX_SetParam(track, 0, 1, 127)
 
         setTrackColor(track, COLOR.LIGHT_BLUE)
@@ -118,9 +118,12 @@ local function useTracks(...)
 end
 
 -- Gets 2 trackNames and creates a split from them
-local function createSplit(lowerTrack, upperTrack)
-    makeTrackLowerSplit(lowerTrack)
-    makeTrackUpperSplit(upperTrack)
+local function createSplit(lowerTrack, upperTrack, splitNote)
+    
+    
+
+    makeTrackLowerSplit(lowerTrack, (splitNote == nil) and SPLIT_NOTE or splitNote)
+    makeTrackUpperSplit(upperTrack, (splitNote == nil) and SPLIT_NOTE or splitNote)
 
     for _, val in pairs(tracks) do
         if val ~= lowerTrack and val ~= upperTrack  then
